@@ -1,0 +1,14 @@
+# UE编译缓存、临时文件全部忽略
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+# IDE配置文件
+.idea/
+.vs/
+*.suo
+# 日志、崩溃文件
+*.log
+*.dump
+# UE打包输出
+Packaged/
