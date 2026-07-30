@@ -6,14 +6,26 @@
 #include "GameplayEffect.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
-//#include "AuraProjectile.generated.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "AuraProjectile.generated.h"
 
 /**
  * 
  */
-class AURA_API AuraProjectile: public AActor
+UCLASS()
+class AURA_API AAuraProjectile: public AActor
 {
+	GENERATED_BODY()
 public:
-	AuraProjectile();
+	AAuraProjectile();
 	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USphereComponent> Sphere;
+	
+	UFUNCTION()
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent,AActor*OtherActor,UPrimitiveComponent*OtherComp,int32 OtherBodyIndex,bool bFromSweep,const FHitResult& SweepResult);
+	
+	virtual void BeginPlay() override;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UProjectileMovementComponent>ProjectileMovementComponent;
 };
