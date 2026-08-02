@@ -24,4 +24,7 @@ class AURA_API ICombatInterface
 public:
 	
 	virtual int32 GetLevel();
+	
+	//返回插槽的位置  （用处1 返回武器上插槽位置 用于火球的生成位置）
+	virtual FVector GetCombatSocketLocation();
 };

@@ -32,6 +32,13 @@ public:
 	
 	UPROPERTY(EditAnywhere,Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
+	//武器上插槽的名称 用于区分 （这个插槽是用于释放魔法）
+	UPROPERTY(EditAnywhere,Category="Combat")
+	FName WeaponTipSocketName;
+	
+	//重新接口函数 
+	virtual FVector GetCombatSocketLocation() override;
+	
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
