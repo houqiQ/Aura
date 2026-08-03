@@ -21,4 +21,7 @@ class AURA_API UAuraProjectileSpell : public UAuraMyGameplayAbility
 	protected:
 	UPROPERTY(EditAnywhere,blueprintReadOnly)
 	TSubclassOf<AAuraProjectile> ProjectileClass;
+	
+	UFUNCTION(BlueprintCallable)
+	void SpawnProjectile();
 };
