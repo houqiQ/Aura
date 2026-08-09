@@ -24,4 +24,6 @@ class AURA_API UAuraProjectileSpell : public UAuraMyGameplayAbility
 	
 	UFUNCTION(BlueprintCallable)
 	void SpawnProjectile();
+	
+	
 };
