@@ -29,4 +29,6 @@ private:
 	
 	//发送鼠标数据
 	void SendMouseCursorData();
+	UFUNCTION()
+	void OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle&DataHandle,FGameplayTag ActivationTag);
 };

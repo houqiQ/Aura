@@ -24,7 +24,15 @@ void UTargetDataUnderMouse::Activate()
 	}
 	else
 	{
-		//TODO 在服务器端 要监听目标数据
+		//在服务器端 要监听目标数据
+		FGameplayAbilitySpecHandle SpecHandle=GetAbilitySpecHandle();
+		AbilitySystemComponent.Get()->AbilityTargetDataSetDelegate(SpecHandle,GetActivationPredictionKey()).AddUObject(this,&UTargetDataUnderMouse::OnTargetDataReplicatedCallback);
+		bool bCalledDelegate=AbilitySystemComponent.Get()->CallReplicatedTargetDataDelegatesIfSet(SpecHandle,GetActivationPredictionKey());
+		if (!bCalledDelegate)
+		{
+			SetWaitingOnRemotePlayerData();
+		}
+
 	}
 	
 	
@@ -60,6 +68,19 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		ValidData.Broadcast(TargetData);
+	}
+	
+	
+}
+
+void UTargetDataUnderMouse::OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& DataHandle,
+	FGameplayTag ActivationTag)
+{
+	//这个是告诉能力系统，目标数据已经接收，不用再存储了
+	AbilitySystemComponent->ConsumeAllReplicatedData(GetAbilitySpecHandle(),GetActivationPredictionKey());
+	if (ShouldBroadcastAbilityTaskDelegates())
+	{
+		ValidData.Broadcast(DataHandle);
 	}
 	
 	
