@@ -15,7 +15,8 @@ void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	
 }
 
-void UAuraProjectileSpell::SpawnProjectile()
+
+void UAuraProjectileSpell::SpawnProjectile(const FVector &ProjectileTargetLocation)
 {
 	
 	//判断自己是否在服务器上
@@ -26,9 +27,11 @@ void UAuraProjectileSpell::SpawnProjectile()
 	FVector ActorLocation=CombatInterface->GetCombatSocketLocation();
 	FTransform Transform;
 	Transform.SetLocation(ActorLocation);
-	//TODO 投射物的旋转 
-	
-	
+	// 投射物的旋转 
+	FRotator Rotation=(ProjectileTargetLocation-ActorLocation).Rotation();
+	//将Z轴归零  飞行物水平飞行
+	Rotation.Pitch=0.0f;
+	Transform.SetRotation(Rotation.Quaternion());
 	AAuraProjectile*Projectile=GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass,Transform,GetOwningActorFromActorInfo(),Cast<APawn>(GetOwningActorFromActorInfo()),ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
 	

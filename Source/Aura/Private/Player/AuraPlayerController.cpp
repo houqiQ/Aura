@@ -68,9 +68,24 @@ void AAuraPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 	
 	UAuraInputComponent*AuraInputComponent=CastChecked<UAuraInputComponent>(InputComponent);
+	
 	AuraInputComponent->BindAction(MoveAction,ETriggerEvent::Triggered,this,&AAuraPlayerController::Move);
+	//做两个处理 按下 和松开
+	AuraInputComponent->BindAction(ShiftAction,ETriggerEvent::Started,this,&AAuraPlayerController::ShiftPressed);
+	AuraInputComponent->BindAction(ShiftAction,ETriggerEvent::Completed,this,&AAuraPlayerController::ShiftReleased);
+	
 	
 	AuraInputComponent->BindAbilityInputActions(InputConfig,this,&AAuraPlayerController::AbilityInputTagPagPressed,&AAuraPlayerController::AbilityInputTagReleased,&AAuraPlayerController::AbilityInputTagHeld);
+}
+
+void AAuraPlayerController::ShiftPressed()
+{
+	bShiftPressed=true;
+}
+
+void AAuraPlayerController::ShiftReleased()
+{
+	bShiftPressed=false;
 }
 
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -166,17 +181,13 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		}
 		return;
 	}
-	//这个是 是否瞄准
-	if(bTargeting)
+	if (GetASC())
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagHeld(InputTag);
+		GetASC()->AbilityInputTagHeld(InputTag);
 			
-		}
-		
 	}
-	else
+	//这个是 是否瞄准
+	if(!bTargeting&&!bShiftPressed)
 	{
 		APawn *AuraPawn = GetPawn();
 		if(AuraPawn && FollowTime<=ShortPressTime)
@@ -198,6 +209,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		}
 		FollowTime=0.f;
 	}
+	
 }
 
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
@@ -212,7 +224,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		return;
 	}
 	//这个是 是否瞄准
-	if(bTargeting)
+	if(bTargeting||bShiftPressed)
 	{
 		if (GetASC())
 		{

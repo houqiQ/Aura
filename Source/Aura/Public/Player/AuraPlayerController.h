@@ -42,6 +42,14 @@ protected:
 	UPROPERTY(EditAnywhere,Category="Input")
 	TObjectPtr<UInputAction>MoveAction;
 	
+	UPROPERTY(EditAnywhere,Category="Input")
+	TObjectPtr<UInputAction>ShiftAction;
+	
+	void ShiftPressed();
+	
+	void ShiftReleased();
+	bool bShiftPressed=false;
+	
 	void Move (const FInputActionValue& InputActionValue);
 	//光标追踪
 	void CursorTrace();

@@ -24,6 +24,11 @@ AAuraProjectile::AAuraProjectile()
 	ProjectileMovementComponent->MaxSpeed=550;
 	//不受重量影响
 	ProjectileMovementComponent->ProjectileGravityScale=0.0f;
+	
+	bReplicates = true;        //Actor总开关，必须开
+	
+	// 投射物移动组件开启复制（可选，保险加上）
+	ProjectileMovementComponent->SetIsReplicated(true);
 }
 
 void AAuraProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
