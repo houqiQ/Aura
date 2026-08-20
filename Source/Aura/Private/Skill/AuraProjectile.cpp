@@ -3,6 +3,10 @@
 
 #include "Skill/AuraProjectile.h"
 
+#include "NiagaraFunctionLibrary.h"
+#include "Components/AudioComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 AAuraProjectile::AAuraProjectile()
 {
 	//不使用Tick
@@ -34,12 +38,51 @@ AAuraProjectile::AAuraProjectile()
 void AAuraProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	//播放声音
+	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(),FRotator::ZeroRotator);
 	
+	//生成一个Niagara系统
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
+	//关闭循环声音
+	LoopingSoundComponent->Stop();
+	
+	//在服务端销毁
+	if (HasAuthority())
+	{
+		//有一种情况 就是销毁动作会同步到客户端 但客户端还没有来得及调用重叠函数 结果就是投射物会在播放音效和生成特效前就被销毁了
+		Destroy();
+	}
+	else
+	{
+		bHit=true;
+	}
 }
 
 void AAuraProjectile::BeginPlay()
 {
 	AActor::BeginPlay();
+	//设置生命周期
+	SetLifeSpan(LiftSpan);
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnOverlap);
+	//播放声音                                          附加到  GetRootComponent()
+	LoopingSoundComponent=UGameplayStatics::SpawnSoundAttached(LoopingSound,GetRootComponent());
+	//关闭循环声音
+	LoopingSoundComponent->Stop();
+	
+}
+
+void AAuraProjectile::Destroyed()
+{
+	if (!bHit&&!HasAuthority())
+	{
+		//播放声音
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(),FRotator::ZeroRotator);
+	
+		//生成一个Niagara系统
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
+	
+	}
+	Super::Destroyed();
+	
 }
 
