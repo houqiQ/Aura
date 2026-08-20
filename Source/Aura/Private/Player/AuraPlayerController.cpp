@@ -181,11 +181,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		}
 		return;
 	}
-	if (GetASC())
-	{
-		GetASC()->AbilityInputTagHeld(InputTag);
-			
-	}
+	
 	//这个是 是否瞄准
 	if(!bTargeting&&!bShiftPressed)
 	{
@@ -208,6 +204,14 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 			
 		}
 		FollowTime=0.f;
+	}
+	else
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagHeld(InputTag);
+			
+		}
 	}
 	
 }

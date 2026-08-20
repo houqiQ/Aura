@@ -7,7 +7,7 @@
 #include "CombatInterface.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI,BlueprintType)
 class UCombatInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -27,4 +27,8 @@ public:
 	
 	//返回插槽的位置  （用处1 返回武器上插槽位置 用于火球的生成位置）
 	virtual FVector GetCombatSocketLocation();
+	
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
+	void UpdateFacingTarget(const FVector& Target);
+	
 };
