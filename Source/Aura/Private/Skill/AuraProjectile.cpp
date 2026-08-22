@@ -4,6 +4,7 @@
 #include "Skill/AuraProjectile.h"
 
 #include "NiagaraFunctionLibrary.h"
+#include "Aura/Aura.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -14,7 +15,7 @@ AAuraProjectile::AAuraProjectile()
 	
 	Sphere=CreateDefaultSubobject<USphereComponent>("Sphere");
 	SetRootComponent(Sphere);
-	
+	Sphere->SetCollisionObjectType(ECC_Projectile);
 	Sphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);//只检测
 	//让它忽略所有通道，除了我想让它重叠的几个通道
 	Sphere->SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -66,8 +67,7 @@ void AAuraProjectile::BeginPlay()
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnOverlap);
 	//播放声音                                          附加到  GetRootComponent()
 	LoopingSoundComponent=UGameplayStatics::SpawnSoundAttached(LoopingSound,GetRootComponent());
-	//关闭循环声音
-	LoopingSoundComponent->Stop();
+	
 	
 }
 
@@ -80,7 +80,8 @@ void AAuraProjectile::Destroyed()
 	
 		//生成一个Niagara系统
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
-	
+		//关闭循环声音
+		LoopingSoundComponent->Stop();
 	}
 	Super::Destroyed();
 	

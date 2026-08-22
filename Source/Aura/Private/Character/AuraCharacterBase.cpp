@@ -3,6 +3,7 @@
 
 #include "Character/AuraCharacterBase.h"
 
+#include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
 
 // Sets default values
@@ -13,6 +14,10 @@ AAuraCharacterBase::AAuraCharacterBase()
 	
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+	//网格的碰撞响应设置
+	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile,ECR_Ignore);
+	//设置是否开启重叠事件
+	GetMesh()->SetGenerateOverlapEvents(true);
 	
 	Weapon=CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(),TEXT("WeaponHandSocket"));
