@@ -165,7 +165,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 	{
 		
 		SetHealth(FMath::Clamp(GetHealth(),0,GetMaxHealth()));
-		
+		UE_LOG(LogTemp,Log,TEXT("UAuraAttributeSet::PostGameplayEffectExecute 中Health changed to: %f"),GetHealth());
 		
 	}
 	

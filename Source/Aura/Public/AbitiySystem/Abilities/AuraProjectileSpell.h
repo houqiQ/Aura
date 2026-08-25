@@ -25,5 +25,6 @@ class AURA_API UAuraProjectileSpell : public UAuraMyGameplayAbility
 	UFUNCTION(BlueprintCallable)     //   ProjectileTargetLocation 攻击的位置
 	void SpawnProjectile(const FVector &ProjectileTargetLocation);
 	
-	
+	UPROPERTY(EditDefaultsOnly,blueprintReadOnly)
+	TSubclassOf<UGameplayEffect>DamageEffectClass;
 };

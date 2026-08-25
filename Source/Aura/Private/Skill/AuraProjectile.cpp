@@ -3,6 +3,8 @@
 
 #include "Skill/AuraProjectile.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Aura/Aura.h"
 #include "Components/AudioComponent.h"
@@ -50,6 +52,13 @@ void AAuraProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	//在服务端销毁
 	if (HasAuthority())
 	{
+		//获取重叠对象的能力组件
+		if (UAbilitySystemComponent*TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+		{
+			//将伤害效果的规格句柄应用到这个能力组件          句柄内部携带的数据本身就是一个包装器   DamageEffectSpecHandle.Data.Get()是返回一个指针需要解引用
+			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+		}
+		
 		//有一种情况 就是销毁动作会同步到客户端 但客户端还没有来得及调用重叠函数 结果就是投射物会在播放音效和生成特效前就被销毁了
 		Destroy();
 	}

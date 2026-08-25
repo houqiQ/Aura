@@ -3,6 +3,8 @@
 
 #include "AbitiySystem/Abilities/AuraProjectileSpell.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -35,8 +37,11 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector &ProjectileTargetLocati
 	AAuraProjectile*Projectile=GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass,Transform,GetOwningActorFromActorInfo(),Cast<APawn>(GetOwningActorFromActorInfo()),ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
 	
-	//TODO  给投射物设置一个用于造成伤害的游戏效果规格
-	
+	// 给投射物设置一个用于造成伤害的游戏效果规格
+	   //把伤害游戏效果绑定到了投射物上
+	UAbilitySystemComponent *SourceASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+	FGameplayEffectSpecHandle SpecHandle=SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),SourceASC->MakeEffectContext());
+	Projectile->DamageEffectSpecHandle=SpecHandle;
 	
 	Projectile->FinishSpawning(Transform);
 }

@@ -46,4 +46,8 @@ public:
 	//生命周期
 	UPROPERTY(EditDefaultsOnly)
 	float LiftSpan=15.f;
+	
+	//meta=(ExposeOnSpawn = true) 生成时暴露
+	UPROPERTY(BlueprintReadOnly,meta=(ExposeOnSpawn = true))
+	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 };

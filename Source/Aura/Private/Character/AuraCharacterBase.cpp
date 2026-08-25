@@ -13,6 +13,8 @@ AAuraCharacterBase::AAuraCharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+	//设置是否开启重叠事件
+	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 	//网格的碰撞响应设置
 	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile,ECR_Ignore);
