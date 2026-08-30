@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Character/AuraCharacterBase.h"
+#include "Components/WidgetComponent.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
 
 /**
@@ -42,5 +44,13 @@ public:
 	
 	/*  End CombatInterface 接口*/
 	
+	//血量显示
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> HealthBar;
 	
+	
+	UPROPERTY(BlueprintAssignable)//BlueprintAssignable 这个是蓝图可赋值
+	FOnHealtChangedSignature OnHealthChanged;
+	UPROPERTY(BlueprintAssignable)//BlueprintAssignable 这个是蓝图可赋值
+	FOnMaxHealtChangedSignature OnMaxHealthChanged;
 };

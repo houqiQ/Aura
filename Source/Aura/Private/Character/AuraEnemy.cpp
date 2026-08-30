@@ -13,6 +13,8 @@ AAuraEnemy::AAuraEnemy()
 	
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 	
+	HealthBar=CreateDefaultSubobject<UWidgetComponent>("HealthBar");
+	HealthBar->SetupAttachment(GetRootComponent()); 
 }
 
 void AAuraEnemy::HighlightActor()
@@ -42,6 +44,30 @@ void AAuraEnemy::BeginPlay()
 	Super::BeginPlay();
 	
 	InitAbilityActorInfo();
+	UAuraAttributeSet*AuraAttributeSet=Cast<UAuraAttributeSet>(AttributeSet);
+	if (UArueUserWidget* ArueUserWidget=Cast<UArueUserWidget>(HealthBar->GetUserWidgetObject()))
+	{
+		ArueUserWidget->SetWidgetController(this);
+	}
+	
+	//绑定委托
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetHealthAttribute()).AddLambda(
+	[this](const FOnAttributeChangeData& Data)
+	{
+		OnHealthChanged.Broadcast(Data.NewValue);
+	}
+	);
+	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxHealthAttribute()).AddLambda(
+	[this](const FOnAttributeChangeData& Data)
+	{
+		OnMaxHealthChanged.Broadcast(Data.NewValue);
+	}
+	);
+	//这个是初始化 UI
+	OnHealthChanged.Broadcast(AuraAttributeSet->GetHealth());
+	OnMaxHealthChanged.Broadcast(AuraAttributeSet->GetMaxHealth());
+	
 }
 
 void AAuraEnemy::InitAbilityActorInfo()
