@@ -3,6 +3,8 @@
 
 #include "Character/AuraEnemy.h"
 
+#include "AbitiySystem/AuraAbilitySystemLibrary.h"
+
 AAuraEnemy::AAuraEnemy()
 {
 	AbilitySystemComponent=CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
@@ -77,7 +79,9 @@ void AAuraEnemy::InitAbilityActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(this,this);
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 	
-	InitializeDefaultAttributes();
+	//InitializeDefaultAttributes();
+	
+	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this,CharaterClass,Level,AbilitySystemComponent);
 	
 }
 

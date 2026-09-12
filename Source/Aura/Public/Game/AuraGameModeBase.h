@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbitiySystem/Data/CharaterClassInfo.h"
 #include "GameFramework/GameModeBase.h"
 #include "AuraGameModeBase.generated.h"
 
@@ -14,6 +15,8 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
-	
+public:
+	UPROPERTY(EditDefaultsOnly,Category="敌方职业配置")
+	TObjectPtr<UCharaterClassInfo>CharaterClassInfo;
 	
 };

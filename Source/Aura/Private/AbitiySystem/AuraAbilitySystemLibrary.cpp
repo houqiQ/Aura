@@ -3,6 +3,7 @@
 
 #include "AbitiySystem/AuraAbilitySystemLibrary.h"
 
+#include "Game/AuraGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
@@ -42,4 +43,28 @@ UAttributMenuWidgetController* UAuraAbilitySystemLibrary::GetAttributeMenuWidget
 		} 
 	}
 	return nullptr;
+}
+
+void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject,ECharacterClass CharacterClass, float Level,UAbilitySystemComponent*ASC)
+{
+	//因为敌方的职业信息在游戏模式 
+	AAuraGameModeBase*AGMB=Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (AGMB==nullptr)return;
+	
+	AActor*AvatarActor=ASC->GetAvatarActor();
+	
+	FGameplayEffectContextHandle ContextHandle =ASC->MakeEffectContext();
+	ContextHandle .AddSourceObject(AvatarActor);
+	
+	FCharacterClassDefaultInfo ClassDefaultInfo=AGMB->CharaterClassInfo->GetCharacterClassInformation(CharacterClass);
+	//施加一个游戏效果
+	FGameplayEffectSpecHandle PrimaryAttributesSpecHandle=ASC->MakeOutgoingSpec(ClassDefaultInfo.PrimaryAttributes,Level,ContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*PrimaryAttributesSpecHandle.Data.Get());
+	
+	FGameplayEffectSpecHandle SecondaryAttributesSpecHandle=ASC->MakeOutgoingSpec(AGMB->CharaterClassInfo->SecondaryAttributes,Level,ContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*SecondaryAttributesSpecHandle.Data.Get());
+	
+	FGameplayEffectSpecHandle SVitalAttributesSpecHandle=ASC->MakeOutgoingSpec(AGMB->CharaterClassInfo->VitalAttributes,Level,ContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*SVitalAttributesSpecHandle.Data.Get());
+	
 }

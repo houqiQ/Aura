@@ -15,9 +15,12 @@
 UENUM(BlueprintType)//它能作为蓝图类型
 enum class  ECharacterClass:uint8
 {
-	Elementalist,//魔法师
-	Warrior,//战士
-	Ranger,//游侠
+	//魔法师
+	Elementalist,
+	//战士
+	Warrior,
+	//游侠
+	Ranger,
 	 
 };
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbitiySystem/Data/CharaterClassInfo.h"
 #include "Character/AuraCharacterBase.h"
 #include "Components/WidgetComponent.h"
 #include "Interaction/EnemyInterface.h"
@@ -38,6 +39,9 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category="CharaterClassDefaults")
 	int32 Level=1;
+	
+	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category="CharaterClassDefaults")
+	ECharacterClass CharaterClass=ECharacterClass::Warrior;
 	
 	/*   CombatInterface 接口*/
 	virtual int32 GetLevel() override;

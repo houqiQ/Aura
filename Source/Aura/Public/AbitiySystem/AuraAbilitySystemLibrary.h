@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/CharaterClassInfo.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UI/WidgetController/AttributMenuWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
@@ -24,5 +25,8 @@ public:
 	//获取属性菜单控件控制器
 	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|WidgetController")
 	static UAttributMenuWidgetController* GetAttributeMenuWidgetController(const UObject* WorldContextObject);
+	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|CharacterClassDefault")
+	//这个函数会基于角色类别和等级初始化默认属性
+	static void InitializeDefaultAttributes(const UObject* WorldContextObject,ECharacterClass CharacterClass,float Level,UAbilitySystemComponent*ASC);
 	
 };
