@@ -175,6 +175,15 @@ public:
 	void OnRep_ManaRegeneration(FGameplayAttributeData & OldManaRegeneration);
 	
 	TMap<FGameplayTag,FAttributeSignture>TagToAttributes;
+	/*元属性   */
+	 
+	//即将受到的伤害 （基础伤害 + 伤害加成 - 护甲  类似这样的）
+	UPROPERTY(BlueprintReadOnly,Category="元属性")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet,IncomingDamage);
+	
+	
+	/*   元属性*/
 };
 
 

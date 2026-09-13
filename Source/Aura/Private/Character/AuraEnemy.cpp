@@ -17,6 +17,8 @@ AAuraEnemy::AAuraEnemy()
 	
 	HealthBar=CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent()); 
+	
+	HealthBar->SetIsReplicated(true); 
 }
 
 void AAuraEnemy::HighlightActor()
@@ -45,6 +47,7 @@ void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	
 	InitAbilityActorInfo();
 	UAuraAttributeSet*AuraAttributeSet=Cast<UAuraAttributeSet>(AttributeSet);
 	if (UArueUserWidget* ArueUserWidget=Cast<UArueUserWidget>(HealthBar->GetUserWidgetObject()))
@@ -66,9 +69,18 @@ void AAuraEnemy::BeginPlay()
 		OnMaxHealthChanged.Broadcast(Data.NewValue);
 	}
 	);
-	//这个是初始化 UI
-	OnHealthChanged.Broadcast(AuraAttributeSet->GetHealth());
-	OnMaxHealthChanged.Broadcast(AuraAttributeSet->GetMaxHealth());
+	
+	FTimerHandle TmpHandle;
+	GetWorld()->GetTimerManager().SetTimer(TmpHandle, [this, AuraAttributeSet]()
+	{
+		//这个是初始化 UI
+		OnHealthChanged.Broadcast(AuraAttributeSet->GetHealth());
+		OnMaxHealthChanged.Broadcast(AuraAttributeSet->GetMaxHealth());
+	}, 1.0f, false);
+	
+	/*OnHealthChanged.Broadcast(AuraAttributeSet->GetHealth());
+	OnMaxHealthChanged.Broadcast(AuraAttributeSet->GetMaxHealth());*/
+	
 	
 }
 

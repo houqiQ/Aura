@@ -165,7 +165,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 	{
 		
 		SetHealth(FMath::Clamp(GetHealth(),0,GetMaxHealth()));
-		UE_LOG(LogTemp,Log,TEXT("UAuraAttributeSet::PostGameplayEffectExecute 中Health changed to: %f"),GetHealth());
+		//UE_LOG(LogTemp,Log,TEXT("UAuraAttributeSet::PostGameplayEffectExecute 中Health changed to: %f"),GetHealth());
 		
 	}
 	
@@ -177,6 +177,23 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 		
 	}
 	
+	if (Data.EvaluatedData.Attribute==GetIncomingDamageAttribute())
+	{
+		//获取伤害值
+		float LocalIncomingDamage=GetIncomingDamage();
+		//归零（归零是因为IncomingDamage 要被多次使用）
+		SetIncomingDamage(0);
+		if (LocalIncomingDamage>0)
+		{
+			//当前血量
+			float NewHealth=GetHealth()-LocalIncomingDamage;
+			SetHealth(FMath::Clamp(NewHealth,0,GetMaxHealth()));
+			
+			
+			bool bFatal=NewHealth<=0;
+		}
+		
+	}
 }
 
 void UAuraAttributeSet::SetEffectProperties(const struct FGameplayEffectModCallbackData& Data, FEffectProperties& Props)
