@@ -39,6 +39,9 @@ public:
 	FGameplayTag InputTag_3;//按键3
 	FGameplayTag InputTag_4;//按键4
 	
+	FGameplayTag Damage;
+	
+	
 	
 private:
 	static  FAuraGameplayTags GameplayTags;

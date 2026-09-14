@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -41,6 +42,11 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector &ProjectileTargetLocati
 	   //把伤害游戏效果绑定到了投射物上
 	UAbilitySystemComponent *SourceASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 	FGameplayEffectSpecHandle SpecHandle=SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),SourceASC->MakeEffectContext());
+	FAuraGameplayTags GameplayTags=FAuraGameplayTags::Get();
+	
+	//使用“由调用者设置”的集合（需要调用能力系统蓝图库）
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Damage,50);
+	
 	Projectile->DamageEffectSpecHandle=SpecHandle;
 	
 	Projectile->FinishSpawning(Transform);
