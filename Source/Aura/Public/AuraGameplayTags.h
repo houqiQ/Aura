@@ -43,6 +43,8 @@ public:
 	
 	
 	
+	
+	
 private:
 	static  FAuraGameplayTags GameplayTags;
 };
