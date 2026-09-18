@@ -3,7 +3,9 @@
 
 #include "Character/AuraEnemy.h"
 
+#include "AuraGameplayTags.h"
 #include "AbitiySystem/AuraAbilitySystemLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AAuraEnemy::AAuraEnemy()
 {
@@ -47,7 +49,7 @@ void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	
+	GetCharacterMovement()->MaxWalkSpeed=BaseWalkSpeed;
 	InitAbilityActorInfo();
 	UAuraAttributeSet*AuraAttributeSet=Cast<UAuraAttributeSet>(AttributeSet);
 	if (UArueUserWidget* ArueUserWidget=Cast<UArueUserWidget>(HealthBar->GetUserWidgetObject()))
@@ -69,7 +71,11 @@ void AAuraEnemy::BeginPlay()
 		OnMaxHealthChanged.Broadcast(Data.NewValue);
 	}
 	);
+	//当特定的游戏标签被添加或移除时触发
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effects_HitReact,EGameplayTagEventType::NewOrRemoved)
+	.AddUObject(this,&AAuraEnemy::HitReactTagChanged);
 	
+	//因为客户端的数据慢，所有加了一个一秒延迟
 	FTimerHandle TmpHandle;
 	GetWorld()->GetTimerManager().SetTimer(TmpHandle, [this, AuraAttributeSet]()
 	{
@@ -77,6 +83,8 @@ void AAuraEnemy::BeginPlay()
 		OnHealthChanged.Broadcast(AuraAttributeSet->GetHealth());
 		OnMaxHealthChanged.Broadcast(AuraAttributeSet->GetMaxHealth());
 	}, 1.0f, false);
+	
+	
 	
 	/*OnHealthChanged.Broadcast(AuraAttributeSet->GetHealth());
 	OnMaxHealthChanged.Broadcast(AuraAttributeSet->GetMaxHealth());*/
@@ -100,4 +108,10 @@ void AAuraEnemy::InitAbilityActorInfo()
 int32 AAuraEnemy::GetLevel()
 {
 	return Level;
+}
+
+void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bHitReacting=NewCount>0;
+	GetCharacterMovement()->MaxWalkSpeed=bHitReacting?0:BaseWalkSpeed;
 }

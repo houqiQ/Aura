@@ -67,9 +67,13 @@ void FAuraGameplayTags::InitializeNativeTags()
 		UGameplayTagsManager::Get().AddNativeGameplayTag
 	(FName("InputTag.4"),FString("输入标签---按键4"));
 	
-	GameplayTags.Damage=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage"),FString("伤害。"));
-
 	
+	GameplayTags.Damage=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage"),FString("伤害。"));
+	
+	
+	GameplayTags.Effects_HitReact=
+		UGameplayTagsManager::Get().AddNativeGameplayTag
+	(FName("Effects.HitReact"),FString("受到攻击"));
 }
 
 FAuraGameplayTags FAuraGameplayTags::GameplayTags;

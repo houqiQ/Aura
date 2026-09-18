@@ -57,4 +57,12 @@ public:
 	FOnHealtChangedSignature OnHealthChanged;
 	UPROPERTY(BlueprintAssignable)//BlueprintAssignable 这个是蓝图可赋值
 	FOnMaxHealtChangedSignature OnMaxHealthChanged;
+
+	//这个是当HitReact这个标签被添加或移除时 调用 （这个是回调函数）
+	UFUNCTION()
+	void HitReactTagChanged(const FGameplayTag CallbackTag,int32 NewCount);
+	
+	//是否受到攻击
+	UPROPERTY(BlueprintReadOnly,Category="Combat")
+	bool bHitReacting=false;
 };

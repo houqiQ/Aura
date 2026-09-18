@@ -75,8 +75,15 @@ public:
 	
 	void AddCharacterAbilities();//添加技能（只应该服务器添加）
 	
+	UPROPERTY(EditAnywhere,Category="Combat")
+	float BaseWalkSpeed;
 	
 	
+	/*战斗接口（上面也有）*/
 	
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	
+	/*战斗接口结束*/
+	UPROPERTY(EditAnywhere,Category="Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
 };
