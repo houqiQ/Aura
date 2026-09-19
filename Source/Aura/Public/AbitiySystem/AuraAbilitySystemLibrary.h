@@ -29,4 +29,7 @@ public:
 	//这个函数会基于角色类别和等级初始化默认属性
 	static void InitializeDefaultAttributes(const UObject* WorldContextObject,ECharacterClass CharacterClass,float Level,UAbilitySystemComponent*ASC);
 	
+	//初始化敌人的游戏能力
+	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|CharacterClassDefault")
+	static void GiveStartupAbilities(const UObject* WorldContextObject,UAbilitySystemComponent*ASC);
 };

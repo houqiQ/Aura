@@ -46,4 +46,6 @@ public:
 	
 	FCharacterClassDefaultInfo GetCharacterClassInformation(ECharacterClass CharacterClass);
 	
+	UPROPERTY(EditDefaultsOnly,Category="Charater Class Defaults")
+	TArray<TSubclassOf<UGameplayAbility>>CommonAbilities;
 };

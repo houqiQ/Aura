@@ -5,6 +5,7 @@
 
 #include "AuraGameplayTags.h"
 #include "AbitiySystem/AuraAbilitySystemLibrary.h"
+
 #include "GameFramework/CharacterMovementComponent.h"
 
 AAuraEnemy::AAuraEnemy()
@@ -51,6 +52,7 @@ void AAuraEnemy::BeginPlay()
 	
 	GetCharacterMovement()->MaxWalkSpeed=BaseWalkSpeed;
 	InitAbilityActorInfo();
+	UAuraAbilitySystemLibrary::GiveStartupAbilities(this,AbilitySystemComponent);
 	UAuraAttributeSet*AuraAttributeSet=Cast<UAuraAttributeSet>(AttributeSet);
 	if (UArueUserWidget* ArueUserWidget=Cast<UArueUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
