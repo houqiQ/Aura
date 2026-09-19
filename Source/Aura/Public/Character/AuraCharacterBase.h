@@ -83,7 +83,11 @@ public:
 	
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	
+	virtual void Die() override;
 	/*战斗接口结束*/
 	UPROPERTY(EditAnywhere,Category="Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+	
+	UFUNCTION(NetMulticast,Reliable)
+	virtual void MulticastHandleDeath();
 };

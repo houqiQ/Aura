@@ -118,3 +118,28 @@ UAnimMontage* AAuraCharacterBase::GetHitReactMontage_Implementation()
 	
 }
 
+void AAuraCharacterBase::Die()
+{
+	//武器分离(这个是同步的 服务器分离了 客户端也会跟着分离)
+	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld,true));
+	
+	MulticastHandleDeath();
+}
+
+void AAuraCharacterBase::MulticastHandleDeath_Implementation()
+{
+	//启动物理模拟
+	Weapon->SetSimulatePhysics(true);
+	GetMesh()->SetSimulatePhysics(true);
+	//启动重力
+	Weapon->SetEnableGravity(true);
+	GetMesh()->SetSimulatePhysics(true); 
+	//启动碰撞
+	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	//取消碰撞
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
+}
+

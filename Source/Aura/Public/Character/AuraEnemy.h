@@ -65,4 +65,10 @@ public:
 	//是否受到攻击
 	UPROPERTY(BlueprintReadOnly,Category="Combat")
 	bool bHitReacting=false;
+	
+	UPROPERTY(BlueprintReadOnly,Category="Combat")
+	float LifeSpan=5;
+	
+	
+	virtual void Die() override;
 };

@@ -12,6 +12,7 @@
 #include "GameplayEffectTypes.h" 
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
+#include "Interaction/CombatInterface.h"
 
 
 UAuraAttributeSet::UAuraAttributeSet()
@@ -196,6 +197,14 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
 				Props.TargetSAC->TryActivateAbilitiesByTag(TagContainer);
+			}
+			else
+			{
+				ICombatInterface* CombatInterface=Cast<ICombatInterface>(Props.TargetActor);
+				if (CombatInterface)
+				{
+					CombatInterface->Die();
+				}
 			}
 		}
 		
