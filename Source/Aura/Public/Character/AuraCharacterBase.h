@@ -82,12 +82,28 @@ public:
 	/*战斗接口（上面也有）*/
 	
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
-	
+	//死亡
 	virtual void Die() override;
 	/*战斗接口结束*/
 	UPROPERTY(EditAnywhere,Category="Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
-	
+	//死亡(组播)
 	UFUNCTION(NetMulticast,Reliable)
 	virtual void MulticastHandleDeath();
+	//实现溶解效果
+	void Dissolve();
+	//开始溶解时间轴 (蓝图可实现 C++中不实现) UMaterialInstanceDynamic 这个是动态材质实例的类型  （）
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartWeaponDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
+	
+	//死亡后的溶解效果  UMaterialInterface 这个是材质的抽象类 (到时候会基于这个材质实例创造一个动态材质实例)
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	TObjectPtr<UMaterialInterface> DissolveMaterialInstance;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	TObjectPtr<UMaterialInterface> WeaponDissolveMaterialInstance;
+	//死亡后的溶解效果结束
+	
 };

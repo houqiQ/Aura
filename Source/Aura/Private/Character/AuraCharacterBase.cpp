@@ -126,6 +126,26 @@ void AAuraCharacterBase::Die()
 	MulticastHandleDeath();
 }
 
+void AAuraCharacterBase::Dissolve()
+{
+	if (IsValid(DissolveMaterialInstance))
+	{
+		//创建动态材质实例
+		UMaterialInstanceDynamic*DynamicMaterialInst=UMaterialInstanceDynamic::Create(DissolveMaterialInstance,this);
+		//设置材质  第一个参数是材质引用 可能有多个材质。
+		GetMesh()->SetMaterial(0,DynamicMaterialInst);
+		StartDissolveTimeline(DynamicMaterialInst);
+	}
+	if (IsValid(WeaponDissolveMaterialInstance))
+	{
+		//创建动态材质实例
+		UMaterialInstanceDynamic*DynamicMaterialInst=UMaterialInstanceDynamic::Create(WeaponDissolveMaterialInstance,this);
+		//设置材质  第一个参数是材质引用 可能有多个材质。
+		Weapon->SetMaterial(0,DynamicMaterialInst);
+		StartWeaponDissolveTimeline(DynamicMaterialInst);
+	}
+}
+
 void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 {
 	//启动物理模拟
@@ -141,5 +161,7 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
+	//溶解效果
+	Dissolve();
 }
 
