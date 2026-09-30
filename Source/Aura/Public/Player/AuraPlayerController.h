@@ -10,6 +10,7 @@
 #include "EnhancedInput/Public//InputMappingContext.h"
 #include "Input/AuraInputConfig.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/Widget/DamageTextComponent.h"
 #include "AuraPlayerController.generated.h"
 
 
@@ -89,4 +90,13 @@ protected:
 	FHitResult CursorHitResult;
 	
 	/*鼠标移动 结束*/
+	
+	
+public:
+	//显示伤害数字（玩家打敌人）
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float Damage,ACharacter*TargetCharacter);
+	//显示伤害数字的类
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UDamageTextComponent>DamagerTextComponentClass;
 };

@@ -9,6 +9,7 @@
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "Input/AuraInputComponent.h"
+#include "GameFramework/Character.h"
 
 
 AAuraPlayerController::AAuraPlayerController()
@@ -297,6 +298,22 @@ void AAuraPlayerController::AutoRun()
 		{
 			bAutoRunning=false;
 		}
+	}
+}
+
+void AAuraPlayerController::ShowDamageNumber_Implementation(float Damage,ACharacter*TargetCharacter)
+{
+	if (IsValid(TargetCharacter)&&DamagerTextComponentClass)
+	{
+		//这里不是构造函数 需要动态生成
+		UDamageTextComponent * DamagerText=NewObject<UDamageTextComponent>(TargetCharacter,DamagerTextComponentClass);
+		//在运行时动态创建（必须手动注册）
+		DamagerText->RegisterComponent();
+		//绑定到目标的跟组件
+		DamagerText->AttachToComponent(TargetCharacter->GetRootComponent(),FAttachmentTransformRules::KeepRelativeTransform);
+		//分离 不让它跟着移动
+		//DamagerText->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+		DamagerText->SetDamageText(Damage);
 	}
 }
 

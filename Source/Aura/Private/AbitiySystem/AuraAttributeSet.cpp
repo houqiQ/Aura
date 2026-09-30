@@ -13,6 +13,7 @@
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
+#include "Player/AuraPlayerController.h"
 
 
 UAuraAttributeSet::UAuraAttributeSet()
@@ -197,6 +198,8 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
 				Props.TargetSAC->TryActivateAbilitiesByTag(TagContainer);
+				
+				
 			}
 			else
 			{
@@ -206,6 +209,16 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 					CombatInterface->Die();
 				}
 			}
+			//自己打自己的情况 不显示
+			if (Props.SourceCharacter!=Props.TargetCharacter)
+			{
+				AAuraPlayerController * PlayerController=Cast<AAuraPlayerController>(Props.SourceController);
+				if (IsValid(PlayerController))
+				{
+					PlayerController->ShowDamageNumber(LocalIncomingDamage,Props.TargetCharacter);
+				}
+			}
+			
 		}
 		
 	}
@@ -240,6 +253,12 @@ void UAuraAttributeSet::SetEffectProperties(const struct FGameplayEffectModCallb
 			Props.SourceCharacter=SourceCharater;
 			
 		}
+	}
+	else
+	{
+		Props.SourceController=SourceController;
+		ACharacter*SourceCharater=Cast<ACharacter>(SourceController->GetPawn());
+		Props.SourceCharacter=SourceCharater;
 	}
 	
 	if (Data.Target.AbilityActorInfo.IsValid()&&Data.Target.AbilityActorInfo->AvatarActor.IsValid())
