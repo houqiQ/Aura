@@ -4,6 +4,7 @@
 #include "AbitiySystem/ExecCalc/ExecCalc_Damage.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "AbitiySystem/AuraAttributeSet.h"
 
 //这个只是在这个类里面用 不用反射
@@ -13,11 +14,15 @@ struct AuraDamageStatics
 	
 	//护甲
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor);
+	//格挡率
+	DECLARE_ATTRIBUTE_CAPTUREDEF(BlockChance);
 	
 	AuraDamageStatics()
 	{
 		//创建并定义了一个名为Armor的属性捕获定义
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,Armor,Target,false);
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,BlockChance,Target,false);
 	}
 };
 //只创造一次
@@ -30,6 +35,7 @@ UExecCalc_Damage::UExecCalc_Damage()
 {
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorDef);
 	
+	RelevantAttributesToCapture.Add(DamageStatics().BlockChanceDef);
 }
 
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
@@ -47,7 +53,6 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	
 	
-	
 	//从源数据和目标数据中收集标签
 	const FGameplayTagContainer*SourceTags=Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer*TargetTags=Spec.CapturedTargetTags.GetAggregatedTags();
@@ -56,12 +61,25 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	FAggregatorEvaluateParameters EvaluateParameters;
 	EvaluateParameters.SourceTags=SourceTags;
 	EvaluateParameters.TargetTags=TargetTags;
-	float Armor=0;
-	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorDef,EvaluateParameters,Armor);
-	Armor=FMath::Max<float>(0,Armor);
-	//这个是为了防止等于零（应该）
-	Armor++;
-	FGameplayModifierEvaluatedData EvaluateData(DamageStatics().ArmorProperty,EGameplayModOp::Additive,Armor);
+	
+	
+	// 伤害由调用者的幅度设定
+	
+	//           获取调用者设定的幅度
+	float Damage=Spec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().Damage);
+
+	//捕获目标的格挡几率，判断是否成功格挡  格挡成功 伤害减半
+	float BlockChance=0;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef,EvaluateParameters,BlockChance);
+	BlockChance=FMath::Max<float>(0,BlockChance);
+	
+	bool bBlocked=FMath::RandRange(1,100)<BlockChance;
+	if (bBlocked)
+	{
+		Damage=Damage/2;;
+	}
+
+	FGameplayModifierEvaluatedData EvaluateData(UAuraAttributeSet::GetIncomingDamageAttribute(),EGameplayModOp::Additive,Damage);
 	
 	OutExecutionOutput.AddOutputModifier(EvaluateData);
 }
