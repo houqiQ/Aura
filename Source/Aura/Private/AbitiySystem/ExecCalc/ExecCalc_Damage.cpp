@@ -16,6 +16,8 @@ struct AuraDamageStatics
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor);
 	//格挡率
 	DECLARE_ATTRIBUTE_CAPTUREDEF(BlockChance);
+	//护甲穿透
+	DECLARE_ATTRIBUTE_CAPTUREDEF(ArmorPenetration);
 	
 	AuraDamageStatics()
 	{
@@ -23,6 +25,8 @@ struct AuraDamageStatics
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,Armor,Target,false);
 		
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,BlockChance,Target,false);
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,ArmorPenetration,	Source,false);
 	}
 };
 //只创造一次
@@ -36,6 +40,9 @@ UExecCalc_Damage::UExecCalc_Damage()
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorDef);
 	
 	RelevantAttributesToCapture.Add(DamageStatics().BlockChanceDef);
+	
+	RelevantAttributesToCapture.Add(DamageStatics().ArmorPenetrationDef);
+	
 }
 
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
@@ -67,13 +74,33 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	//           获取调用者设定的幅度
 	float Damage=Spec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().Damage);
-
-	//捕获目标的格挡几率，判断是否成功格挡  格挡成功 伤害减半
-	float BlockChance=0;
-	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef,EvaluateParameters,BlockChance);
-	BlockChance=FMath::Max<float>(0,BlockChance);
 	
-	bool bBlocked=FMath::RandRange(1,100)<BlockChance;
+	
+	//护甲
+	float TargetArmor=0;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorDef,EvaluateParameters,TargetArmor);
+	TargetArmor=FMath::Max<float>(0,TargetArmor);
+	
+	
+	//护甲穿透忽略目标护甲的百分比
+	float SourceArmorPenetration=0;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorPenetrationDef,EvaluateParameters,SourceArmorPenetration);
+	SourceArmorPenetration=FMath::Max<float>(0,SourceArmorPenetration);
+	
+	
+	
+	//有效护甲值  表示忽略一定比例护甲后剩余的护甲值 (每点有效护甲能减免0.3%的伤害)
+	float EffectiveArmor=0;
+	
+	EffectiveArmor=FMath::Max<float>(0,TargetArmor*(100-SourceArmorPenetration)/100);
+	
+	Damage=Damage*(100-EffectiveArmor*0.3)/100;
+	
+	//捕获目标的格挡几率，判断是否成功格挡  格挡成功 伤害减半
+	float TargetBlockChance=0;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef,EvaluateParameters,TargetBlockChance);
+	TargetBlockChance=FMath::Max<float>(0,TargetBlockChance);
+	bool bBlocked=FMath::RandRange(1,100)<TargetBlockChance;
 	if (bBlocked)
 	{
 		Damage=Damage/2;;

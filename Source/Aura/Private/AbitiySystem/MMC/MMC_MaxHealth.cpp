@@ -15,6 +15,7 @@ UMMC_MaxHealth::UMMC_MaxHealth()
 	//是否有快照
 	VigorDef.bSnapshot=false;
 	
+	
 	//将其添加到MMC捕获定义数组中
 	RelevantAttributesToCapture.Add(VigorDef);
 }
