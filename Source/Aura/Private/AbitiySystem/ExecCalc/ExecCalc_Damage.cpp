@@ -5,7 +5,10 @@
 
 #include "AbilitySystemComponent.h"
 #include "AuraGameplayTags.h"
+#include "AbitiySystem/AuraAbilitySystemLibrary.h"
 #include "AbitiySystem/AuraAttributeSet.h"
+#include "AbitiySystem/Data/CharaterClassInfo.h"
+#include "Interaction/CombatInterface.h"
 
 //这个只是在这个类里面用 不用反射
 struct AuraDamageStatics
@@ -57,7 +60,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	AActor*TargetAvActor=TargetASC?TargetASC->GetAvatarActor():nullptr;
 	
 	FGameplayEffectSpec Spec=ExecutionParams.GetOwningSpec();
-	
+	ICombatInterface *SourceCombatInterface=Cast<ICombatInterface>(SourceAvActor);
+	ICombatInterface *TargetCombatInterface=Cast<ICombatInterface>(TargetAvActor);
 	
 	
 	//从源数据和目标数据中收集标签
@@ -87,14 +91,24 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorPenetrationDef,EvaluateParameters,SourceArmorPenetration);
 	SourceArmorPenetration=FMath::Max<float>(0,SourceArmorPenetration);
 	
+	//获取伤害系数
+	UCharaterClassInfo * CharaterClassInfo=UAuraAbilitySystemLibrary::GetCharaterClassInfo(SourceAvActor);
+	//找到曲线后，要指定这个曲线的行名                                                        需要一个上下蚊子串 可以传入一个空的
+	FRealCurve *ArmorPenetrationCurve= CharaterClassInfo->DamageCalculationCoefficient->FindCurve(FName("ArmorPentration"),FString(""));
+	// 护甲穿透系数                                                            输入等级
+	float ArmorPenetrationCoefficient=ArmorPenetrationCurve->Eval(SourceCombatInterface->GetLevel());
+	
 	
 	
 	//有效护甲值  表示忽略一定比例护甲后剩余的护甲值 (每点有效护甲能减免0.3%的伤害)
 	float EffectiveArmor=0;
 	
-	EffectiveArmor=FMath::Max<float>(0,TargetArmor*(100-SourceArmorPenetration)/100);
-	
-	Damage=Damage*(100-EffectiveArmor*0.3)/100;
+	EffectiveArmor=FMath::Max<float>(0,TargetArmor*(100-SourceArmorPenetration*ArmorPenetrationCoefficient)/100);
+	//找到曲线后，要指定这个曲线的行名                                                        需要一个上下蚊子串 可以传入一个空的
+	FRealCurve *EffectiveArmorCurve= CharaterClassInfo->DamageCalculationCoefficient->FindCurve(FName("EffectiveArmor"),FString(""));
+	//有效护甲系数
+	float EffectiveArmorCoefficient=EffectiveArmorCurve->Eval(TargetCombatInterface->GetLevel());
+	Damage=Damage*(100-EffectiveArmor*EffectiveArmorCoefficient)/100;
 	
 	//捕获目标的格挡几率，判断是否成功格挡  格挡成功 伤害减半
 	float TargetBlockChance=0;

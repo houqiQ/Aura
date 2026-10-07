@@ -32,4 +32,8 @@ public:
 	//初始化敌人的游戏能力
 	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|CharacterClassDefault")
 	static void GiveStartupAbilities(const UObject* WorldContextObject,UAbilitySystemComponent*ASC);
+	
+	//返回数据资源
+	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|CharacterClassDefault")
+	static UCharaterClassInfo*GetCharaterClassInfo(const UObject* WorldContextObject);
 };

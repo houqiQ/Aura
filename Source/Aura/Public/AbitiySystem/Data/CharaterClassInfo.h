@@ -48,4 +48,8 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly,Category="Charater Class Defaults")
 	TArray<TSubclassOf<UGameplayAbility>>CommonAbilities;
+	
+	//伤害系数表（ 例如每点有效护甲能减免0.3%的伤害 的0.3%）
+	UPROPERTY(EditDefaultsOnly,Category="Charater Class Defaults|Damage")
+	TObjectPtr<UCurveTable>DamageCalculationCoefficient;
 };
