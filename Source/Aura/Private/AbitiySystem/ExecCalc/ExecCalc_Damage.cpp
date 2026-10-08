@@ -21,6 +21,12 @@ struct AuraDamageStatics
 	DECLARE_ATTRIBUTE_CAPTUREDEF(BlockChance);
 	//护甲穿透
 	DECLARE_ATTRIBUTE_CAPTUREDEF(ArmorPenetration);
+	//暴击率
+	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitChance);
+	//暴击伤害
+	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitDamage);
+	//暴击抗性
+	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitResistance);
 	
 	AuraDamageStatics()
 	{
@@ -30,6 +36,13 @@ struct AuraDamageStatics
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,BlockChance,Target,false);
 		
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,ArmorPenetration,	Source,false);
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,CriticalHitChance,Source,false);
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,CriticalHitDamage,Source,false);
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,CriticalHitResistance,Target,false);
+		
 	}
 };
 //只创造一次
@@ -45,6 +58,13 @@ UExecCalc_Damage::UExecCalc_Damage()
 	RelevantAttributesToCapture.Add(DamageStatics().BlockChanceDef);
 	
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorPenetrationDef);
+	
+	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitChanceDef);
+	
+	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitDamageDef);
+	
+	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitResistanceDef);
+	
 	
 }
 
@@ -115,11 +135,50 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef,EvaluateParameters,TargetBlockChance);
 	TargetBlockChance=FMath::Max<float>(0,TargetBlockChance);
 	bool bBlocked=FMath::RandRange(1,100)<TargetBlockChance;
+	//这个是格挡
 	if (bBlocked)
 	{
 		Damage=Damage/2;;
 	}
 
+	//获取自己的暴击率 
+	
+	float SourceCriticalHitChance=0;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitChanceDef,EvaluateParameters,SourceCriticalHitChance);
+	SourceCriticalHitChance=FMath::Max<float>(0,SourceCriticalHitChance);
+	bool bCritocaled=FMath::RandRange(1,100)<SourceCriticalHitChance;
+	
+	
+	
+	
+	Damage=Damage*(100-EffectiveArmor*EffectiveArmorCoefficient)/100;
+	
+	//这个是暴击
+	if (bCritocaled)
+	{
+		//自己的暴击伤害
+		float SourceCriticalHitDamage=0;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitChanceDef,EvaluateParameters,SourceCriticalHitDamage);
+		SourceCriticalHitDamage=FMath::Max<float>(0,SourceCriticalHitDamage);
+		
+		//目标的暴击抗性
+		float TargetCriticalHitResistance=0;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitResistanceDef,EvaluateParameters,SourceCriticalHitDamage);
+		TargetCriticalHitResistance=FMath::Max<float>(0,TargetCriticalHitResistance);
+		
+		//有效暴击率
+		
+		//找到曲线后，要指定这个曲线的行名                                                        需要一个上下蚊子串 可以传入一个空的
+		FRealCurve *CriticalHitResistanceCurve= CharaterClassInfo->DamageCalculationCoefficient->FindCurve(FName("CriticalHitResistance"),FString(""));
+		//有效护甲系数
+		float CriticalHitResistanceCoefficient=CriticalHitResistanceCurve->Eval(TargetCombatInterface->GetLevel());
+		
+		Damage=Damage*2+(SourceCriticalHitDamage-TargetCriticalHitResistance*CriticalHitResistanceCoefficient);
+	}
+
+	
+	
+	
 	FGameplayModifierEvaluatedData EvaluateData(UAuraAttributeSet::GetIncomingDamageAttribute(),EGameplayModOp::Additive,Damage);
 	
 	OutExecutionOutput.AddOutputModifier(EvaluateData);
