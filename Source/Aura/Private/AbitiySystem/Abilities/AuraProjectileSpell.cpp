@@ -41,7 +41,20 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector &ProjectileTargetLocati
 	// 给投射物设置一个用于造成伤害的游戏效果规格
 	   //把伤害游戏效果绑定到了投射物上
 	UAbilitySystemComponent *SourceASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-	FGameplayEffectSpecHandle SpecHandle=SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),SourceASC->MakeEffectContext());
+	
+	/*没看懂*/
+	FGameplayEffectContextHandle EffectContextHandle=SourceASC->MakeEffectContext();
+	EffectContextHandle.SetAbility(this);
+	EffectContextHandle.AddSourceObject(Projectile);
+	TArray<TWeakObjectPtr<AActor>> Actors;
+	Actors.Add(Projectile);
+	EffectContextHandle.AddActors(Actors);
+	FHitResult HitResult;
+	HitResult.Location=ProjectileTargetLocation;
+	EffectContextHandle.AddHitResult(HitResult);	
+	
+	
+	FGameplayEffectSpecHandle SpecHandle=SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),EffectContextHandle);
 	FAuraGameplayTags GameplayTags=FAuraGameplayTags::Get();
 	 
 	//在能力等级上进行评估 (后面的都没太懂)  Damage.AsInteger()这个是想要整数   Damage.EvaluateCurveAtLevel() 这个是需要传曲线表  Damage.GetValueAtLevel(GetAbilityLevel());这个是获取对应等级的值
