@@ -38,3 +38,12 @@ protected:
 	bool bIsCriticalHit=false;
 	
 };
+template<>
+struct TStructOpsTypeTraits<FAuraGameplayEffectContext>:public TStructOpsTypeTraitsBase2<FAuraGameplayEffectContext>
+{
+	enum
+	{
+		WithNetSerializer=true,
+		WithCopy=true,
+	};
+};
