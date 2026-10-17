@@ -11,6 +11,7 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectTypes.h" 
 #include "GameplayEffectExtension.h"
+#include "AbitiySystem/AuraAbilitySystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "Player/AuraPlayerController.h"
@@ -215,6 +216,10 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 				AAuraPlayerController * PlayerController=Cast<AAuraPlayerController>(Props.SourceController);
 				if (IsValid(PlayerController))
 				{
+					//获取 是否暴击或者格挡
+					bool bBlocked=UAuraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
+					bool bCritical=UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
+					
 					PlayerController->ShowDamageNumber(LocalIncomingDamage,Props.TargetCharacter);
 				}
 			}

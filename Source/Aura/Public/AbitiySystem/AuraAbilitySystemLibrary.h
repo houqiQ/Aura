@@ -36,4 +36,23 @@ public:
 	//返回数据资源
 	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|CharacterClassDefault")
 	static UCharaterClassInfo*GetCharaterClassInfo(const UObject* WorldContextObject);
+	
+	//访问AuraGameplayEffectContextd的是否格挡(可蓝图虚函数)
+	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static bool IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle);
+	//访问AuraGameplayEffectContextd的是否暴击(可蓝图虚函数)
+	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static bool IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle);
+	
+	//设置AuraGameplayEffectContextd的是否格挡(蓝图可调用)
+	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static void SetIsBlockedHit(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle,bool bInIsBlockedHit);
+	
+	//设置AuraGameplayEffectContextd的是否暴击(蓝图可调用)
+	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static void SetIsCriticalHit(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle,bool bInIsCriticalHit);
+	
+	
+	
+	
 };

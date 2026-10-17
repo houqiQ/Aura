@@ -4,6 +4,7 @@
 #include "AbitiySystem/ExecCalc/ExecCalc_Damage.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuraAbilityTypes.h"
 #include "AuraGameplayTags.h"
 #include "AbitiySystem/AuraAbilitySystemLibrary.h"
 #include "AbitiySystem/AuraAttributeSet.h"
@@ -93,6 +94,13 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	EvaluateParameters.SourceTags=SourceTags;
 	EvaluateParameters.TargetTags=TargetTags;
 	
+	//或者上下文
+	FGameplayEffectContextHandle EffectContextHandle=Spec.GetContext();
+	//static_casts  是C++的
+	FAuraGameplayEffectContext*AuraContext=static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	
+	
+	
 	
 	// 伤害由调用者的幅度设定
 	
@@ -130,15 +138,21 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	float EffectiveArmorCoefficient=EffectiveArmorCurve->Eval(TargetCombatInterface->GetLevel());
 	Damage=Damage*(100-EffectiveArmor*EffectiveArmorCoefficient)/100;
 	
+	
+	
 	//捕获目标的格挡几率，判断是否成功格挡  格挡成功 伤害减半
 	float TargetBlockChance=0;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef,EvaluateParameters,TargetBlockChance);
 	TargetBlockChance=FMath::Max<float>(0,TargetBlockChance);
 	bool bBlocked=FMath::RandRange(1,100)<TargetBlockChance;
+	
+	//这个是给上下文传值(格挡)
+	AuraContext->SetIsBlockedHit(bBlocked);
 	//这个是格挡
 	if (bBlocked)
 	{
 		Damage=Damage/2;;
+		
 	}
 
 	//获取自己的暴击率 
@@ -152,7 +166,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	
 	Damage=Damage*(100-EffectiveArmor*EffectiveArmorCoefficient)/100;
-	
+	//这个是给上下文传值(暴击)
+	AuraContext->SetIsCriticalHit(bCritocaled);
 	//这个是暴击
 	if (bCritocaled)
 	{
