@@ -95,7 +95,7 @@ protected:
 public:
 	//显示伤害数字（玩家打敌人）
 	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(float Damage,ACharacter*TargetCharacter);
+	void ShowDamageNumber(float Damage,ACharacter*TargetCharacter,bool IsBlocked,bool IsCritical);
 	//显示伤害数字的类
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UDamageTextComponent>DamagerTextComponentClass;

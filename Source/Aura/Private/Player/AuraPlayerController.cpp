@@ -301,7 +301,7 @@ void AAuraPlayerController::AutoRun()
 	}
 }
 
-void AAuraPlayerController::ShowDamageNumber_Implementation(float Damage,ACharacter*TargetCharacter)
+void AAuraPlayerController::ShowDamageNumber_Implementation(float Damage,ACharacter*TargetCharacter,bool IsBlocked,bool IsCritical)
 {
 	if (IsValid(TargetCharacter)&&DamagerTextComponentClass)
 	{
@@ -313,7 +313,7 @@ void AAuraPlayerController::ShowDamageNumber_Implementation(float Damage,ACharac
 		DamagerText->AttachToComponent(TargetCharacter->GetRootComponent(),FAttachmentTransformRules::KeepRelativeTransform);
 		//分离 不让它跟着移动
 		//DamagerText->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
-		DamagerText->SetDamageText(Damage);
+		DamagerText->SetDamageText(Damage,IsBlocked,IsCritical);
 	}
 }
 

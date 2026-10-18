@@ -220,7 +220,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 					bool bBlocked=UAuraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
 					bool bCritical=UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
 					
-					PlayerController->ShowDamageNumber(LocalIncomingDamage,Props.TargetCharacter);
+					PlayerController->ShowDamageNumber(LocalIncomingDamage,Props.TargetCharacter,bBlocked,bCritical);
 				}
 			}
 			
