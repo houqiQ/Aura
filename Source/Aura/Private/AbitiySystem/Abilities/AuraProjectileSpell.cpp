@@ -56,18 +56,14 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector &ProjectileTargetLocati
 	
 	FGameplayEffectSpecHandle SpecHandle=SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),EffectContextHandle);
 	FAuraGameplayTags GameplayTags=FAuraGameplayTags::Get();
-	 
-	//在能力等级上进行评估 (后面的都没太懂)  Damage.AsInteger()这个是想要整数   Damage.EvaluateCurveAtLevel() 这个是需要传曲线表  Damage.GetValueAtLevel(GetAbilityLevel());这个是获取对应等级的值
-	float ScaledDamage=Damage.GetValueAtLevel(GetAbilityLevel());
 	
-	//打印
-	GEngine->AddOnScreenDebugMessage(-1,3,FColor::Red,FString::Printf(TEXT("void UAuraProjectileSpell::SpawnProjectile(const FVector &ProjectileTargetLocation) 中 ScaledDamage 为%f"),ScaledDamage));
-	 int32 a=Damage.AsInteger(GetAbilityLevel());
-	
-	
-	//使用“由调用者设置”的集合（需要调用能力系统蓝图库）
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Damage,50);
-	
+	for (auto Pair:DamageTypes)
+	{
+		//在能力等级上进行评估 (后面的都没太懂)  Damage.AsInteger()这个是想要整数   Damage.EvaluateCurveAtLevel() 这个是需要传曲线表  Damage.GetValueAtLevel(GetAbilityLevel());这个是获取对应等级的值
+		float ScaledDamage=Pair.Value.GetValueAtLevel(GetAbilityLevel());
+		//使用“由调用者设置”的集合（需要调用能力系统蓝图库）
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,Pair.Key,ScaledDamage);
+	}
 	Projectile->DamageEffectSpecHandle=SpecHandle;
 	
 	Projectile->FinishSpawning(Transform);

@@ -104,9 +104,15 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	// 伤害由调用者的幅度设定
 	
-	//           获取调用者设定的幅度
-	float Damage=Spec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().Damage);
 	
+	float Damage=0;
+	for (auto DamageTypeTag:FAuraGameplayTags::Get().DamageTypes)
+	{
+		//           获取调用者设定的幅度
+		const float DamageTypeValue=Spec.GetSetByCallerMagnitude(DamageTypeTag);
+		
+		Damage+=DamageTypeValue;
+	}
 	
 	//护甲
 	float TargetArmor=0;

@@ -44,6 +44,14 @@ public:
 	
 	FGameplayTag Effects_HitReact;
 	
+	//伤害类型
+	
+	FGameplayTag Damage_Fire;//火系伤害
+	
+	
+	//把这些伤害类型加到这个数组
+	TArray<FGameplayTag> DamageTypes;
+	
 	
 	
 	
