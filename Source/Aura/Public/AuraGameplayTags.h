@@ -32,6 +32,11 @@ public:
 	FGameplayTag Attributes_Primary_Resilience;//韧性
 	FGameplayTag Attributes_Primary_Vigor;//活力
 	
+	FGameplayTag Attributes_Resistance_Fire;//火焰抗性
+	FGameplayTag Attributes_Resistance_Lightning;//闪电抗性
+	FGameplayTag Attributes_Resistance_Arcane;//奥术抗性
+	FGameplayTag Attributes_Resistance_Physical;//物理抗性
+	
 	FGameplayTag InputTag_LMB;//左鼠标
 	FGameplayTag InputTag_RMB;//右鼠标
 	FGameplayTag InputTag_1;//按键1
@@ -47,10 +52,13 @@ public:
 	//伤害类型
 	
 	FGameplayTag Damage_Fire;//火系伤害
+	FGameplayTag Damage_Lightning;//闪电伤害
+	FGameplayTag Damage_Arcane;//奥术伤害
+	FGameplayTag Damage_Physical;//物理伤害
 	
 	
-	//把这些伤害类型加到这个数组
-	TArray<FGameplayTag> DamageTypes;
+	//把这些伤害类型和对应的抗性添加到
+	TMap<FGameplayTag,FGameplayTag> DamageTypesToResistance;
 	
 	
 	

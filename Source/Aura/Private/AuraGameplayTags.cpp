@@ -36,6 +36,22 @@ void FAuraGameplayTags::InitializeNativeTags()
 	//活力
 	GameplayTags.Attributes_Primary_Vigor=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Primary.Vigor"),FString("增加生命值。"));
 	
+	//火焰抗性
+	GameplayTags.Attributes_Resistance_Fire=
+		UGameplayTagsManager::Get().AddNativeGameplayTag
+	(FName("Attributes.Resistance.Fire"),FString("火焰抗性。"));
+	//闪电抗性
+	GameplayTags.Attributes_Resistance_Lightning=
+		UGameplayTagsManager::Get().AddNativeGameplayTag
+	(FName("Attributes.Resistance.Lightning"),FString("闪电抗性。"));
+	//奥术抗性
+	GameplayTags.Attributes_Resistance_Arcane=
+		UGameplayTagsManager::Get().AddNativeGameplayTag
+	(FName("Attributes.Resistance.Arcane"),FString("奥术抗性。"));
+	//物理抗性
+	GameplayTags.Attributes_Resistance_Physical=
+		UGameplayTagsManager::Get().AddNativeGameplayTag
+	(FName("Attributes.Resistance.Physical"),FString("物理抗性。"));
 	
 	//输入标签
 	
@@ -82,9 +98,17 @@ void FAuraGameplayTags::InitializeNativeTags()
 	
 	GameplayTags.Damage_Fire=UGameplayTagsManager::Get().AddNativeGameplayTag
 	(FName("Damage.Fire"),FString("火系伤害"));
+	GameplayTags.Damage_Lightning=UGameplayTagsManager::Get().AddNativeGameplayTag
+	(FName("Damage.Lightning"),FString("闪电伤害"));
+	GameplayTags.Damage_Arcane=UGameplayTagsManager::Get().AddNativeGameplayTag
+	(FName("Damage.Arcane"),FString("奥术伤害"));
+	GameplayTags.Damage_Physical=UGameplayTagsManager::Get().AddNativeGameplayTag
+	(FName("Damage.Physical"),FString("物理伤害"));
 	
-	
-	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Fire);
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Fire,GameplayTags.Attributes_Resistance_Fire);
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Lightning,GameplayTags.Attributes_Resistance_Lightning);
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Arcane,GameplayTags.Attributes_Resistance_Arcane);
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Physical,GameplayTags.Attributes_Resistance_Physical);
 }
 
 FAuraGameplayTags FAuraGameplayTags::GameplayTags;
