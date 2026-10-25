@@ -184,6 +184,37 @@ public:
 	
 	
 	/*   元属性*/
+	
+	/*抗性属性  */
+	
+	UPROPERTY(ReplicatedUsing=OnRep_FireResistance,BlueprintReadOnly,Category="Resistance Attributes")
+	FGameplayAttributeData FireResistance;//火焰抗性
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet,FireResistance);
+	UFUNCTION()
+	void OnRep_FireResistance(FGameplayAttributeData & OldManaRegeneration);
+	
+	UPROPERTY(ReplicatedUsing=OnRep_LightningResistance,BlueprintReadOnly,Category="Resistance Attributes")
+	FGameplayAttributeData LightningResistance;//闪电抗性
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet,LightningResistance);
+	UFUNCTION()
+	void OnRep_LightningResistance(FGameplayAttributeData & OldManaRegeneration);
+	
+	UPROPERTY(ReplicatedUsing=OnRep_ArcaneResistance,BlueprintReadOnly,Category="Resistance Attributes")
+	FGameplayAttributeData ArcaneResistance;//奥术抗性
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet,ArcaneResistance);
+	UFUNCTION()
+	void OnRep_ArcaneResistance(FGameplayAttributeData & OldManaRegeneration);
+	
+	UPROPERTY(ReplicatedUsing=OnRep_PhysicalResistance,BlueprintReadOnly,Category="Resistance Attributes")
+	FGameplayAttributeData PhysicalResistance;//物理抗性
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet,PhysicalResistance);
+	UFUNCTION()
+	void OnRep_PhysicalResistance(FGameplayAttributeData & OldManaRegeneration);
+	
+	
+	
+	
+	/*   抗性属性*/
 };
 
 

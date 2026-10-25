@@ -110,7 +110,6 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	{
 		//           获取调用者设定的幅度
 		const float DamageTypeValue=Spec.GetSetByCallerMagnitude(Pair.Key);
-		
 		Damage+=DamageTypeValue;
 	}
 	
