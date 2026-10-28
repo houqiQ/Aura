@@ -28,7 +28,18 @@ struct AuraDamageStatics
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitDamage);
 	//暴击抗性
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitResistance);
+	//火焰抗性
+	DECLARE_ATTRIBUTE_CAPTUREDEF(FireResistance);
+	//闪电抗性
+	DECLARE_ATTRIBUTE_CAPTUREDEF(LightningResistance);
+	//奥术抗性
+	DECLARE_ATTRIBUTE_CAPTUREDEF(ArcaneResistance);
+	//物理抗性
+	DECLARE_ATTRIBUTE_CAPTUREDEF(PhysicalResistance);
 	
+	
+	//使用一个T映射 把玩法标签映射到玩法属性捕获定义上
+	TMap<FGameplayTag,FGameplayEffectAttributeCaptureDefinition>TagSToCaptureDefs;
 	AuraDamageStatics()
 	{
 		//创建并定义了一个名为Armor的属性捕获定义
@@ -43,6 +54,26 @@ struct AuraDamageStatics
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,CriticalHitDamage,Source,false);
 		
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,CriticalHitResistance,Target,false);
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,FireResistance,Target,false);
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,LightningResistance,Target,false);
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,ArcaneResistance,Target,false);
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet,PhysicalResistance,Target,false);
+		
+		const FAuraGameplayTags Tags=FAuraGameplayTags::Get();
+		TagSToCaptureDefs.Add(Tags.Attributes_Secondary_Armor,ArmorDef);
+		TagSToCaptureDefs.Add(Tags.Attributes_Secondary_BlockChance,BlockChanceDef);
+		TagSToCaptureDefs.Add(Tags.Attributes_Secondary_ArmorPenetration,ArmorPenetrationDef);
+		TagSToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitChance,CriticalHitChanceDef);
+		TagSToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitResistance,CriticalHitResistanceDef);
+		TagSToCaptureDefs.Add(Tags.Attributes_Resistance_Fire,FireResistanceDef);
+		TagSToCaptureDefs.Add(Tags.Attributes_Resistance_Lightning,LightningResistanceDef);
+		TagSToCaptureDefs.Add(Tags.Attributes_Resistance_Arcane,ArcaneResistanceDef);
+		TagSToCaptureDefs.Add(Tags.Attributes_Resistance_Physical,PhysicalResistanceDef);
+		UE_LOG(LogTemp, Warning, TEXT("AuraDamageStatics 构造函数被调用了！"));
 		
 	}
 };
@@ -65,6 +96,14 @@ UExecCalc_Damage::UExecCalc_Damage()
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitDamageDef);
 	
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitResistanceDef);
+	
+	RelevantAttributesToCapture.Add(DamageStatics().FireResistanceDef);
+	
+	RelevantAttributesToCapture.Add(DamageStatics().LightningResistanceDef);
+	
+	RelevantAttributesToCapture.Add(DamageStatics().ArcaneResistanceDef);
+	
+	RelevantAttributesToCapture.Add(DamageStatics().PhysicalResistanceDef);
 	
 	
 }
@@ -106,11 +145,31 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	
 	float Damage=0;
+	
+	
 	for (auto Pair:FAuraGameplayTags::Get().DamageTypesToResistance)
 	{
-		//           获取调用者设定的幅度
-		const float DamageTypeValue=Spec.GetSetByCallerMagnitude(Pair.Key);
-		Damage+=DamageTypeValue;
+		//伤害标签
+		const FGameplayTag DamageTag=Pair.Key;
+		//抗性标签
+		const FGameplayTag ResistanceTag=Pair.Value;
+		AuraDamageStatics  asd=DamageStatics();
+		checkf(DamageStatics().TagSToCaptureDefs.Contains(ResistanceTag),TEXT("void UExecCalc_Damage::Execute_Implementation中 没有这个Tag [%s]"),*ResistanceTag.ToString());
+		
+		
+		const FGameplayEffectAttributeCaptureDefinition CaptureDef=DamageStatics().TagSToCaptureDefs[ResistanceTag];
+		
+		//           获取调用者设定的幅度 这个是技能上拿数据
+		float DamageTypeValue=Spec.GetSetByCallerMagnitude(Pair.Key,false);
+		
+		float ResistancePenetration=0;
+		//这个是角色上拿数据
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef,EvaluateParameters,ResistancePenetration);
+		ResistancePenetration=FMath::Clamp(ResistancePenetration,0.f,100.f);
+		
+		
+		//抗性是 0~100 的百分比，这里要除以 100；写成 (1 - 抗性) 的话抗性>1 就会把伤害变成负数
+		Damage+=DamageTypeValue*(100-ResistancePenetration)/100;
 	}
 	
 	//护甲
@@ -170,7 +229,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	
 	
-	Damage=Damage*(100-EffectiveArmor*EffectiveArmorCoefficient)/100;
+	//护甲在上面已经减过一次了，这里不能再乘一遍
 	//这个是给上下文传值(暴击)
 	AuraContext->SetIsCriticalHit(bCritocaled);
 	//这个是暴击
@@ -178,12 +237,12 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	{
 		//自己的暴击伤害
 		float SourceCriticalHitDamage=0;
-		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitChanceDef,EvaluateParameters,SourceCriticalHitDamage);
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitDamageDef,EvaluateParameters,SourceCriticalHitDamage);
 		SourceCriticalHitDamage=FMath::Max<float>(0,SourceCriticalHitDamage);
 		
 		//目标的暴击抗性
 		float TargetCriticalHitResistance=0;
-		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitResistanceDef,EvaluateParameters,SourceCriticalHitDamage);
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitResistanceDef,EvaluateParameters,TargetCriticalHitResistance);
 		TargetCriticalHitResistance=FMath::Max<float>(0,TargetCriticalHitResistance);
 		
 		//有效暴击率

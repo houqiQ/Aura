@@ -1,4 +1,4 @@
-﻿//这个是给能力系统自定义类型用的  会写很多自定义类型
+//这个是给能力系统自定义类型用的  会写很多自定义类型
 #pragma once
 
 #include "GameplayEffectTypes.h"
@@ -20,7 +20,7 @@ public:
 	/** Returns the actual struct used for serialization, subclasses must override this! */
 	virtual UScriptStruct* GetScriptStruct() const
 	{
-		return FGameplayEffectContext::StaticStruct();
+		return FAuraGameplayEffectContext::StaticStruct();
 	}
 	
 	/** Custom serialization, subclasses must override this */

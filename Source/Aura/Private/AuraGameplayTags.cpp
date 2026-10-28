@@ -5,6 +5,19 @@
 
 #include "GameplayTagsManager.h"
 
+FAuraGameplayTags& FAuraGameplayTags::Get()
+{
+	
+	if (GameplayTags.Attributes_Secondary_Armor.IsValid() == false)
+	{
+		InitializeNativeTags();
+		// 如果无效，重新去请求标签
+		GameplayTags.Attributes_Secondary_Armor = FGameplayTag::RequestGameplayTag(FName("Attributes.Secondary.Armor"));
+		// ... 其他所有标签 ...
+	}
+	return GameplayTags;
+}
+
 void FAuraGameplayTags::InitializeNativeTags()
 {    //护甲                                                 //标签名字                           //标签提示
 	GameplayTags.Attributes_Secondary_Armor=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.Armor"),FString("减少受到的伤害，提升格挡几率。"));

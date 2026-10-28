@@ -12,7 +12,7 @@
 struct FAuraGameplayTags
 {
 public:
-	static  FAuraGameplayTags& Get(){return GameplayTags;}
+	static  FAuraGameplayTags& Get();
 	
 	static void InitializeNativeTags();
 	//游戏标签变量
