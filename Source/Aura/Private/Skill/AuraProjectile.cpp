@@ -22,6 +22,12 @@ AAuraProjectile::AAuraProjectile()
 	//让它忽略所有通道，除了我想让它重叠的几个通道
 	Sphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	
+	/*  这个是之前大肥鱼改的
+	 //注意：这里必须是 Overlap，写成 Ignore 的话球体不会和任何东西产生重叠（敌人是 Pawn）
+	Sphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
+	Sphere->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+	Sphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);*/
+	
 	Sphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
 	Sphere->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
 	Sphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
@@ -33,6 +39,10 @@ AAuraProjectile::AAuraProjectile()
 	ProjectileMovementComponent->ProjectileGravityScale=0.0f;
 	
 	bReplicates = true;        //Actor总开关，必须开
+	/* 这个是之前大肥鱼改的
+	 //投射物是普通 AActor，默认不复制移动（Pawn 才在构造函数里默认开）；不开的话客户端那份拿到位置修正
+	SetReplicateMovement(true);
+	*/
 	
 	// 投射物移动组件开启复制（可选，保险加上）
 	ProjectileMovementComponent->SetIsReplicated(true);
@@ -41,17 +51,45 @@ AAuraProjectile::AAuraProjectile()
 void AAuraProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if(!DamageEffectSpecHandle.Data.IsValid())
+	{
+		return;
+	}
+	
+	if (DamageEffectSpecHandle.Data.IsValid()&&DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser()==OtherActor)
+	{
+		return;
+	}
+	
+	
+	if (bHit)
+	{
+		//播放声音
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(),FRotator::ZeroRotator);
+	
+		//生成一个Niagara系统
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
+		if(LoopingSoundComponent)
+			//关闭循环声音
+				LoopingSoundComponent->Stop();
+	}
+	
 	//播放声音
-	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(),FRotator::ZeroRotator);
+	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, OtherActor->GetActorLocation(),FRotator::ZeroRotator);
 	
 	//生成一个Niagara系统
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
-	//关闭循环声音
-	LoopingSoundComponent->Stop();
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,OtherActor->GetActorLocation());
+	if(LoopingSoundComponent)
+		//关闭循环声音
+			LoopingSoundComponent->Stop();
 	
 	//在服务端销毁
 	if (HasAuthority())
 	{
+		
+		
+		
+		
 		//获取重叠对象的能力组件
 		if (UAbilitySystemComponent*TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
@@ -65,6 +103,7 @@ void AAuraProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	else
 	{
 		bHit=true;
+		
 	}
 }
 
@@ -74,6 +113,8 @@ void AAuraProjectile::BeginPlay()
 	//设置生命周期
 	SetLifeSpan(LiftSpan);
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnOverlap);
+	//UE_LOG(LogTemp, Log, TEXT("AAuraProjectile::BeginPlay() 中RootComponent valid: %d"), IsValid(GetRootComponent()));
+	
 	//播放声音                                          附加到  GetRootComponent()
 	LoopingSoundComponent=UGameplayStatics::SpawnSoundAttached(LoopingSound,GetRootComponent());
 	
@@ -90,8 +131,10 @@ void AAuraProjectile::Destroyed()
 		//生成一个Niagara系统
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
 		//关闭循环声音
+		if(LoopingSoundComponent)
 		LoopingSoundComponent->Stop();
 	}
+	
 	Super::Destroyed();
 	
 }

@@ -33,7 +33,7 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector &ProjectileTargetLocati
 	// 投射物的旋转 
 	FRotator Rotation=(ProjectileTargetLocation-ActorLocation).Rotation();
 	//将Z轴归零  飞行物水平飞行
-	Rotation.Pitch=0.0f;
+	//Rotation.Pitch=0.0f;
 	Transform.SetRotation(Rotation.Quaternion());
 	AAuraProjectile*Projectile=GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass,Transform,GetOwningActorFromActorInfo(),Cast<APawn>(GetOwningActorFromActorInfo()),ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	

@@ -48,10 +48,16 @@ void AAuraPlayerController::BeginPlay()
 	//这个是换了一下
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	ULocalPlayer* LocalPlayer = PlayerController ? Cast<ULocalPlayer>(PlayerController->GetLocalPlayer()) : nullptr;
+	
+	if (LocalPlayer)
+	{
+		UEnhancedInputLocalPlayerSubsystem* Subsystem=ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
+		check(Subsystem);
+		Subsystem->AddMappingContext(AureContext,0);
+	}
 	//
-	UEnhancedInputLocalPlayerSubsystem* Subsystem=ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
-	check(Subsystem);
-	Subsystem->AddMappingContext(AureContext,0);
+	
+	
 
 	
 	bShowMouseCursor=true;

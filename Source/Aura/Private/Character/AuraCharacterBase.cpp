@@ -17,7 +17,7 @@ AAuraCharacterBase::AAuraCharacterBase()
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 	//网格的碰撞响应设置
-	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile,ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile,ECR_Overlap);
 	//设置是否开启重叠事件
 	GetMesh()->SetGenerateOverlapEvents(true);
 	
