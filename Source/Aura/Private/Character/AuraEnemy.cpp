@@ -5,6 +5,7 @@
 
 #include "AuraGameplayTags.h"
 #include "AbitiySystem/AuraAbilitySystemLibrary.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -132,4 +133,18 @@ void AAuraEnemy::Die()
 {
 	SetLifeSpan(5);
 	Super::Die();
+}
+
+void AAuraEnemy::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	
+	if (!HasAuthority())return;
+		
+	AuraAIController=Cast<AAuraAIController>(NewController);	
+	
+	//初始化 黑板
+	AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	//运行行为树
+	AuraAIController->RunBehaviorTree(BehaviorTree);
 }

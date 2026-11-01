@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AbitiySystem/Data/CharaterClassInfo.h"
+#include "AI/AuraAIController.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "Character/AuraCharacterBase.h"
 #include "Components/WidgetComponent.h"
 #include "Interaction/EnemyInterface.h"
@@ -71,4 +73,13 @@ public:
 	
 	
 	virtual void Die() override;
+	
+	//行为树
+	UPROPERTY(EditAnywhere,Category="AI")	
+	TObjectPtr<UBehaviorTree>BehaviorTree;
+	//AI控制器
+	UPROPERTY()
+	TObjectPtr<AAuraAIController> AuraAIController;
+	
+	virtual void PossessedBy(AController* NewController) override;
 };
