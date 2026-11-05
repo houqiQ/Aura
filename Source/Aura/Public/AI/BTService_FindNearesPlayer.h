@@ -15,5 +15,13 @@ class AURA_API UBTService_FindNearesPlayer : public UBTService_BlueprintBase
 	GENERATED_BODY()
 	
 protected:
+
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
+public:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	FBlackboardKeySelector TargetToFollowSelector;
+	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	FBlackboardKeySelector DistanceToTargetSelector;
 };
