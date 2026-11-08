@@ -4,6 +4,7 @@
 #include "AI/BTService_FindNearesPlayer.h"
 
 #include "AIController.h"
+#include "BehaviorTree/BTFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 void UBTService_FindNearesPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -16,5 +17,16 @@ void UBTService_FindNearesPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	
 	TArray<AActor*> TargetActors;
 	UGameplayStatics::GetAllActorsWithTag(OwningPawn,TargetTag,TargetActors);
-	
+	/*
+	float aa=0;
+	AActor*Target=UGameplayStatics::FindNearestActor(OwningPawn->GetActorLocation(),TargetActors,aa); 
+	*/
+	float ClosestDistance =TNumericLimits<float>::Max();
+	AActor* ClosestActor=UGameplayStatics::FindNearestActor(OwningPawn->GetActorLocation(),TargetActors,ClosestDistance); 
+	if (ClosestActor)
+	{
+		//设置黑板
+		UBTFunctionLibrary::SetBlackboardValueAsObject(this,TargetToFollowSelector,ClosestActor);
+		UBTFunctionLibrary::SetBlackboardValueAsFloat(this,DistanceToTargetSelector,ClosestDistance);
+	}
 }
