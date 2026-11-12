@@ -23,6 +23,12 @@ AAuraEnemy::AAuraEnemy()
 	HealthBar->SetupAttachment(GetRootComponent()); 
 	
 	HealthBar->SetIsReplicated(true); 
+	
+	bUseControllerRotationPitch=false;
+	bUseControllerRotationRoll=false;
+	bUseControllerRotationYaw=false;
+	
+	GetCharacterMovement()->bUseControllerDesiredRotation=true;
 }
 
 void AAuraEnemy::HighlightActor()

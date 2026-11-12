@@ -67,9 +67,13 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ApplyEffectToTarget(AActor* TargetActor,TSubclassOf<UGameplayEffect>GameplayEffectClass);
 	
-	// 这个是 是否要销毁对象
+	// 这个是 是否效果应用时销毁
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="AppliedEffect")
-	bool bDestroyOnEffectRemoval=false;
+	bool bDestroyOnEffectApplication=false;
+	
+	//是否效果应用到敌人
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="AppliedEffect")
+	bool bApplyEffectsToEnemies=false;
 	
 	UFUNCTION(BlueprintCallable)
 	void OnOverlap(AActor*TargetActor);
