@@ -38,10 +38,11 @@ public:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
 	
-	
+	//等级
 	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category="CharaterClassDefaults")
 	int32 Level=1;
 	
+	//职业
 	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category="CharaterClassDefaults")
 	ECharacterClass CharaterClass=ECharacterClass::Warrior;
 	

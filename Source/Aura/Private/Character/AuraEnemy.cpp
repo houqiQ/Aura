@@ -133,6 +133,8 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 {
 	bHitReacting=NewCount>0;
 	GetCharacterMovement()->MaxWalkSpeed=bHitReacting?0:BaseWalkSpeed;
+	
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"),bHitReacting);
 }
 
 void AAuraEnemy::Die()
@@ -153,4 +155,11 @@ void AAuraEnemy::PossessedBy(AController* NewController)
 	AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	//运行行为树
 	AuraAIController->RunBehaviorTree(BehaviorTree);
+	
+	//初始化受击
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"),false);
+	
+	//  设置是否是远程                                                                                           判断职业
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"),CharaterClass!=ECharacterClass::Warrior);
+	
 }
